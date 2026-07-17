@@ -1,0 +1,21 @@
+DUCKY_LANG US
+DELAY 2000
+
+REM --- Example 1: Multi-line comment block ---
+REM_BLOCK
+This is a big comment
+And a few more lines
+END_REM
+
+
+REM --- Before with STRINGLN ---
+STRINGLN Hello
+STRINGLN World
+STRINGLN Test
+
+REM --- After with STRINGLN_BLOCK ---
+STRINGLN_BLOCK
+Hello
+World
+Test
+END_STRINGLN

